@@ -11,7 +11,7 @@ A secure API for transferring funds between accounts, built with Symfony 6.4, PH
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/riteshk-07/paysera-transfer-app.git
    cd paysera-transfer-app
    ```
 
