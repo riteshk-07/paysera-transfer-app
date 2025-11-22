@@ -1,0 +1,30 @@
+framework:
+    secret: "%env(APP_SECRET)%"
+
+    # We are building a stateless API
+    session:
+        enabled: false
+
+    http_method_override: false
+
+    php_errors:
+        log: true
+
+    serializer:
+        enable_annotations: false
+
+    # Accept JSON by default — required for clean API behavior
+    request:
+        formats:
+            json: ['application/json']
+
+    # Prevent Symfony from trying to guess formats
+    router:
+        utf8: true
+
+    # Disable form + csrf subsystems (not relevant for API)
+    form: { enabled: false }
+    csrf_protection: { enabled: false }
+
+    validation:
+        enable_annotations: false

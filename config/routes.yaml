@@ -1,0 +1,17 @@
+# Explicitly load controller annotations (no autowiring magic)
+api_controllers:
+    resource: ../src/Controller/Api/
+    type: attribute
+    prefix: /
+
+# Health check route (optional but useful for Docker/K8s)
+health_check:
+    path: /health
+    controller: Symfony\Bundle\FrameworkBundle\Controller\TemplateController::class
+    defaults:
+        template: ''
+
+debug_repo:
+    path: /debug/repo
+    controller: App\Controller\DebugController::test
+

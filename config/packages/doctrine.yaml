@@ -1,0 +1,41 @@
+doctrine:
+    dbal:
+        url: '%env(resolve:DATABASE_URL)%'
+        driver: 'pdo_mysql'
+        charset: utf8mb4
+        default_table_options:
+            charset: utf8mb4
+            collate: utf8mb4_unicode_ci
+
+        # IMPORTANT for fintech work:
+        # Always use UTC to avoid time drift between app + db + logs.
+        server_version: '8.0'
+        options:
+            1002: "SET time_zone = '+00:00'"
+
+    orm:
+        auto_generate_proxy_classes: true
+        naming_strategy: doctrine.orm.naming_strategy.underscore_number_aware
+
+        # Prevents automatic loading of validation or serializer metadata
+        mappings:
+            App:
+                is_bundle: false
+                type: attribute
+                dir: '%kernel.project_dir%/src/Entity'
+                prefix: 'App\Entity'
+                alias: App
+
+        # Performance/hardening:
+        controller_resolver:
+            auto_mapping: false
+
+        # Make hydrating entities predictable:
+        dql:
+            string_functions: {}
+            numeric_functions: {}
+            datetime_functions: {}
+
+        # Avoid lazy-loading blowups on serialization
+        hydrators:
+            default: Doctrine\ORM\Internal\Hydration\ObjectHydrator

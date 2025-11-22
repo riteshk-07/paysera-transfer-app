@@ -1,0 +1,82 @@
+parameters:
+    app.currency: 'INR'
+    app.currency_precision: 2
+    app.api_tokens: '%env(json:APP_API_TOKENS)%'
+
+services:
+    _defaults:
+        autowire: false
+        autoconfigure: false
+        public: false
+
+    _instanceof:
+        Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface:
+            tags: ['doctrine.repository_service']
+
+    # Repositories - explicitly register them with autowiring
+    App\Repository\AccountRepository:
+        arguments:
+            - '@doctrine'
+    App\Repository\TransferRepository:
+        arguments:
+            - '@doctrine'
+    App\Repository\LedgerEntryRepository:
+        arguments:
+            - '@doctrine'
+
+    # Controllers
+    App\Controller\Api\AccountController:
+        public: true
+        arguments:
+            - '@App\Service\AccountService'
+            - '@serializer'
+            - '@validator'
+
+    App\Controller\Api\TransferController:
+        public: true
+        arguments:
+            - '@App\Service\AccountService'
+            - '@App\Service\TransferService'
+
+    App\Controller\DebugController:
+        public: true
+        arguments:
+            - '@App\Repository\AccountRepository'
+
+
+    # Services
+    App\Service\AccountService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@App\Repository\AccountRepository'
+            - '%app.currency%'
+            - '%app.currency_precision%'
+
+    App\Service\TransferService:
+        arguments:
+            - '@doctrine.orm.entity_manager'
+            - '@App\Repository\TransferRepository'
+            - '@App\Repository\AccountRepository'
+            - '@App\Repository\LedgerEntryRepository'
+            - '@redis'
+            - '%app.currency%'
+            - '%app.currency_precision%'
+    
+    # Security: API Token Authenticator
+    App\Security\ApiTokenAuthenticator:
+        public: true
+        arguments:
+            - '%app.api_tokens%'
+        tags:
+            - { name: 'security.authenticator' }
+
+    # Redis Client
+    redis:
+        class: Predis\Client
+        arguments:
+            - '%env(REDIS_URL)%'
+
+    monolog.formatter.json:
+        class: Monolog\Formatter\JsonFormatter
+        arguments:
+            - true

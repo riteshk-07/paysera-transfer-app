@@ -1,0 +1,22 @@
+security:
+    enable_authenticator_manager: true
+
+    # We are building a stateless API. No sessions. No cookies. No CSRF.
+    providers:
+        api_token_provider:
+            memory:
+                users: []
+
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+
+        api:
+            pattern: ^/api
+            stateless: true
+            custom_authenticators:
+                - App\Security\ApiTokenAuthenticator
+
+    access_control:
+        - { path: ^/api/, roles: IS_AUTHENTICATED_FULLY }
